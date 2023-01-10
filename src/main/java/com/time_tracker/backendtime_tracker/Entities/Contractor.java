@@ -38,5 +38,5 @@ public class Contractor {
     private String position;
 
     @OneToMany(mappedBy = "contractor")
-    private Set<Project> projects;
+    private Set<Project> projects = new HashSet<>();
 }
