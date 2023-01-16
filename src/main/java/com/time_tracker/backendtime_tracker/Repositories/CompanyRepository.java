@@ -1,5 +1,6 @@
 package com.time_tracker.backendtime_tracker.Repositories;
 
+import com.time_tracker.backendtime_tracker.Dtos.Company.CompanyDto;
 import com.time_tracker.backendtime_tracker.Entities.Company;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -10,23 +11,18 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-@Component
-public interface CompanyRepository extends CrudRepository<Company, Integer> {
-
+public interface CompanyRepository extends CrudRepository<Company, Long> {
     @Override
     Iterable<Company> findAll();
-
     @Override
-    Optional<Company> findById(Integer integer);
-    Optional<Company> findById(String string);
-
+    Optional<Company> findById(Long companyId);
     @Override
-    void deleteById(Integer integer);
-
+    void deleteById(Long integer);
     @Override
-    <S extends Company> S save(S entity);
+    Company save(Company company);
 
-//    @Query("SELECT c FROM Company c WHERE c.name = :name")
+    Optional<Company> getCompanyByName(String companyName);
+
+//        @Query("SELECT c FROM Company c WHERE c.name = :name")
 //    Optional<Company> findByName(@Param("name") String name);
-    Optional<Company> findByName(String name);
 }

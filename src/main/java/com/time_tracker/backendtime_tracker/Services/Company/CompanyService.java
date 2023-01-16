@@ -1,7 +1,8 @@
 package com.time_tracker.backendtime_tracker.Services.Company;
 
 import com.time_tracker.backendtime_tracker.Dtos.Company.CompanyDto;
-import com.time_tracker.backendtime_tracker.Entities.Company;
+import com.time_tracker.backendtime_tracker.Dtos.Company.CompanyDtoDetails;
+import com.time_tracker.backendtime_tracker.Dtos.Company.CompanyDtoWithProject;
 
 import java.util.Set;
 
@@ -12,10 +13,10 @@ public interface CompanyService {
 
     void deleteCompany(String companyName) throws Exception;
 
-    Set<Company> getAllCompanies();
+    Set<CompanyDto> getAllCompanies();
 
-    CompanyDto getSpecificCompany(String comapnyName) throws Exception;
+    CompanyDtoDetails getSpecificCompany(String companyName) throws Exception;
 
-    // we can not declare this way -> updateCompany(String companyName), because later on we will need all the fields of object
     CompanyDto updateCompany(CompanyDto companyDto) throws Exception;
+
 }

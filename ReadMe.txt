@@ -13,3 +13,16 @@ Functionalities:
 
  Usefull links to use in the feature:
  https://www.toptal.com/java/spring-boot-rest-api-error-handling
+
+
+ Repositories are used to communicate with database. If we want to do something on database we need to implement
+ already defined operations, for example CrudRepository or create our own
+ All repositories function can be used in Service
+
+ Service is the layer between controller which uses Dto model and database and entity model
+ In Service interface we define only business methods
+ One of this method can implements many methods from repository for example in update function we need to
+ - check if the id is valid and unique (1 method from repository)
+ - save object (2 method from repository)
+
+ Service interfaces define business methods used by controller, but repositories define methods used in service

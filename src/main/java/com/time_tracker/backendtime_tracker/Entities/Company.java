@@ -1,44 +1,48 @@
 package com.time_tracker.backendtime_tracker.Entities;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.Range;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
+import org.aspectj.bridge.IMessage;
+import org.hibernate.validator.constraints.Length;
 
+import javax.persistence.*;
+import javax.validation.constraints.*;
+import java.time.Year;
 import java.util.HashSet;
 import java.util.Set;
-//motBlank
-
 
 
 @Entity
-@Data
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Company {
 
-    @jakarta.persistence.Id
+    @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "company_id", nullable = false)
-    private Integer id;
+    private Long id;
 
 
-    @Column(name = "name", length = 15, nullable = false)
+    @NotNull(message = "Name cannot be null")
+    @Length(max = 15, message = "Maximum 15 characters")
+    @Column(name = "name")
     private String name;
 
-    @Column(name = "industry", length = 25, nullable = true)
+    @Length(max = 25, message = "Maxiumum 25 characters")
+    @Column(name = "industry", nullable = true)
     private String industry;
 
-    @Range(min=1800, max= 2022)
+    @Min(value = 1500, message = "Minimum year is 1500")
+    @Max(value = 2022, message ="Maximum year is 2022" )
+    @NotNull(message = "Founded year cannot be null")
     @Column(name = "founded_year", nullable = false )
     private Integer foundedYear;
 
 
-    @Min(value= 0)
+    @Min(value= 0, message = "Minimum budget is 0")
     @Column(name = "budget", nullable = true)
     private Integer budget;
 

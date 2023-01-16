@@ -1,5 +1,6 @@
 package com.time_tracker.backendtime_tracker.Services.Projects;
 
+import com.time_tracker.backendtime_tracker.Dtos.Project.ProjectDto;
 import com.time_tracker.backendtime_tracker.Entities.Company;
 import com.time_tracker.backendtime_tracker.Entities.Contractor;
 import com.time_tracker.backendtime_tracker.Entities.Project;
@@ -40,7 +41,7 @@ public class ProjectServiceImpl implements ProjectService{
             throw new Exception("Contractor with given id does not exist");
         }
 
-        Optional<Company> company = companyRepository.findById(project.getCompany().getName());
+        Optional<Company> company = companyRepository.findById(project.getCompany().getId());
         if(!(company.isPresent())){
             throw new Exception("Given company name does not exist");
         }
@@ -60,7 +61,7 @@ public class ProjectServiceImpl implements ProjectService{
     }
 
     @Override
-    public void deleteProject(Integer projectId) throws Exception {
+    public void deleteProject(Long projectId) throws Exception {
         Optional<Project> contractor = projectRepository.findById(projectId);
 
         if(!(contractor.isPresent())){
@@ -80,7 +81,7 @@ public class ProjectServiceImpl implements ProjectService{
             throw new Exception("Contractor with given id does not exist");
         }
 
-        Optional<Company> company = companyRepository.findById(project.getCompany().getName());
+        Optional<Company> company = companyRepository.findById(project.getCompany().getId());
         if(!(company.isPresent())){
             throw new Exception("Given company name does not exist");
         }
@@ -88,7 +89,7 @@ public class ProjectServiceImpl implements ProjectService{
         try {
             resultedProject = new Project();
             resultedProject = projectRepository.save(new Project(null, project.getStartDate(), project.getEndDate(),
-                    project.getDailySalary(), company.get(),contractor.get(), project.getDescription()));
+                    project.getContractorDailySalary(), company.get(),contractor.get(), project.getDescription()));
         }catch (Exception e){
             throw new Exception(e.getCause());
         }
@@ -97,7 +98,7 @@ public class ProjectServiceImpl implements ProjectService{
     }
 
     @Override
-    public Project getSpecificProject(Integer projectId) throws Exception {
+    public Project getSpecificProject(Long projectId) throws Exception {
         Optional<Project> project = projectRepository.findById(projectId);
 
         if(!(project.isPresent())){
@@ -107,8 +108,11 @@ public class ProjectServiceImpl implements ProjectService{
     }
 
     @Override
-    public Set<Project> getAllProjects() {
+    public Set<ProjectDto> getAllProjects() {
         Iterable<Project> contractors = projectRepository.findAll();
-        return ProjectMapper.castIterableProjectToSet(contractors);
+        System.out.println("Service iterable");
+        System.out.println(contractors);
+
+        return ProjectMapper.castIterableProjectToProjectDto(contractors);
     }
 }

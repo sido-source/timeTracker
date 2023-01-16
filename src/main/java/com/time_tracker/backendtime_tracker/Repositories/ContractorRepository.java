@@ -7,8 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface ContractorRepository extends CrudRepository<Contractor, Integer> {
-
+public interface ContractorRepository extends CrudRepository<Contractor, Long> {
     @Override
-    Optional<Contractor> findById(Integer id);
+    Optional<Contractor> findById(Long contractId);
 }

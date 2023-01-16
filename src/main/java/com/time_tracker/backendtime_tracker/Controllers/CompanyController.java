@@ -1,18 +1,22 @@
 package com.time_tracker.backendtime_tracker.Controllers;
 
 import com.time_tracker.backendtime_tracker.Dtos.Company.CompanyDto;
-import com.time_tracker.backendtime_tracker.Dtos.OutcommingResponses;
+import com.time_tracker.backendtime_tracker.Dtos.Company.CompanyDtoDetails;
 import com.time_tracker.backendtime_tracker.Entities.Company;
 import com.time_tracker.backendtime_tracker.Services.Company.CompanyService;
-import jakarta.validation.Valid;
-import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.support.NullValue;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 
@@ -28,31 +32,29 @@ public class CompanyController {
     }
 
     @PostMapping("save")
-    public ResponseEntity<String> saveCompany(@RequestBody CompanyDto companyDto){
+    public ResponseEntity<CompanyDto> saveCompany(@Valid @RequestBody CompanyDto companyDto){
+
         try {
-            companyService.saveCompany(companyDto);
+            companyDto = companyService.saveCompany(companyDto);
         } catch (Exception e) {
             //throw new RuntimeException(e);
 
-            return new ResponseEntity<String>(e.getCause().getCause().getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<CompanyDto>(companyDto, HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity<String>("Company has been succesfully created. Your unique indetifier is: " + companyDto.getName(), HttpStatus.OK);
+        return new ResponseEntity<CompanyDto>(companyDto, HttpStatus.OK);
     }
 
     @GetMapping("get")
-    public ResponseEntity<Set<Company>> getAllCompanies(){
-        // we return the list of all Companies, regardles of the number of returnred elements
-        // in worst case, 0 element list will be returned <==> null
-
-        Set<Company> companySet = null;
+    public ResponseEntity<Set<CompanyDto>> getAllCompanies(){
+        Set<CompanyDto> companySet = null;
 
         try {
-            companySet = new HashSet<Company>(companyService.getAllCompanies());
+            companySet = new HashSet<CompanyDto>(companyService.getAllCompanies());
         }catch (Exception e){
-            return new ResponseEntity<Set<Company>>(companySet ,HttpStatus.OK);
+            return new ResponseEntity<Set<CompanyDto>>(companySet ,HttpStatus.OK);
         }
-        return new ResponseEntity<Set<Company>>(companySet, HttpStatus.OK);
+        return new ResponseEntity<Set<CompanyDto>>(companySet, HttpStatus.OK);
     }
 
     @PostMapping("update")
@@ -69,6 +71,19 @@ public class CompanyController {
         return new ResponseEntity<String>("Succesfully updated", HttpStatus.OK);
     }
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Object> handleValidationExceptions(
+            MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    }
+
+
     @DeleteMapping("delete/{name}")
     public ResponseEntity<String> deleteCompany(@PathVariable("name") String companyName){
 
@@ -82,16 +97,16 @@ public class CompanyController {
     }
 
     @GetMapping("get/{name}")
-    public ResponseEntity<CompanyDto> getSpecificCompany(@PathVariable("name") String companyName) throws Exception {
+    public ResponseEntity<CompanyDtoDetails> getSpecificCompany(@PathVariable("name") String companyName) throws Exception {
 
-        CompanyDto companyDto = null;
+        CompanyDtoDetails companyDtoDetails = null;
         try{
-            companyDto = companyService.getSpecificCompany(companyName);
+            companyDtoDetails = companyService.getSpecificCompany(companyName);
         }catch(Exception e){
-            return new ResponseEntity<CompanyDto>(companyDto, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<CompanyDtoDetails>(companyDtoDetails, HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity<CompanyDto>(companyDto, HttpStatus.OK);
+        return new ResponseEntity<CompanyDtoDetails>(companyDtoDetails, HttpStatus.OK);
 
     }
 }

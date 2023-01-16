@@ -1,5 +1,6 @@
 package com.time_tracker.backendtime_tracker.Controllers;
 
+import com.time_tracker.backendtime_tracker.Dtos.Project.ProjectDto;
 import com.time_tracker.backendtime_tracker.Entities.Contractor;
 import com.time_tracker.backendtime_tracker.Entities.Project;
 import com.time_tracker.backendtime_tracker.Repositories.ProjectRepository;
@@ -17,6 +18,8 @@ public class ProjectController {
 
     @Autowired
     private ProjectService projectService;
+    @Autowired
+    private ProjectRepository projectRepository;
 
     @PostMapping("update")
     public ResponseEntity<Project> updateProject(@RequestBody Project project) throws Exception {
@@ -32,7 +35,7 @@ public class ProjectController {
     }
 
     @DeleteMapping("/delete/{projectId}")
-    public ResponseEntity<String> deleteProject(Integer projectId) throws Exception {
+    public ResponseEntity<String> deleteProject(Long projectId) throws Exception {
 
         try {
             projectService.deleteProject(projectId);
@@ -43,12 +46,15 @@ public class ProjectController {
     }
 
     @GetMapping("get")
-    public ResponseEntity<Set<Project>> getAllProjects(){
-        return new ResponseEntity<Set<Project>>(projectService.getAllProjects(),HttpStatus.OK);
+    public Set<ProjectDto> getAllProjects(){
+        Set<ProjectDto> projects = projectService.getAllProjects();
+        System.out.println("Controller");
+        System.out.println(projects);
+        return projects;
     }
 
     @GetMapping("get/{projectId}")
-    public ResponseEntity<Project> getSpecificProject(Integer projectId) throws Exception {
+    public ResponseEntity<Project> getSpecificProject(Long projectId) throws Exception {
 
         Project project = null;
 

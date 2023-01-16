@@ -1,5 +1,7 @@
 package com.time_tracker.backendtime_tracker.Services.Contractor;
 
+import com.time_tracker.backendtime_tracker.Dtos.Contractor.ContractorDto;
+import com.time_tracker.backendtime_tracker.Dtos.Contractor.ContractorDtoDetails;
 import com.time_tracker.backendtime_tracker.Entities.Contractor;
 import com.time_tracker.backendtime_tracker.Mapper.CompanyMapper;
 import com.time_tracker.backendtime_tracker.Mapper.ContractorMapper;
@@ -15,15 +17,17 @@ public class ContractorServiceImpl implements ContractorService{
 
     @Autowired
     private ContractorRepository contractorRepository;
-    public Contractor updateContractor(Contractor contractor) throws Exception {
+    @Override
+    public ContractorDto updateContractor(ContractorDto contractorDto) throws Exception {
         Contractor updateContractor = new Contractor();
-        Optional<Contractor> resultContractor = contractorRepository.findById(contractor.getId());
+
+        Optional<Contractor> resultContractor = contractorRepository.findById(contractorDto.getId());
 
         if(!(resultContractor.isPresent())){
             throw new Exception("Contractor with given id does not exist");
         }
 
-        updateContractor = ContractorMapper.updateCompanyFields(resultContractor.get(), contractor);
+        updateContractor = ContractorMapper.updateCompanyFields(resultContractor.get(), ContractorMapper.castContractorDtoToContractor(contractorDto));
 
         try{
             contractorRepository.save(updateContractor);
@@ -31,10 +35,10 @@ public class ContractorServiceImpl implements ContractorService{
             throw new Exception(e.getCause().getCause());
         }
 
-        return updateContractor;
+        return ContractorMapper.castContractToContractorDto(updateContractor);
     }
-
-    public void deleteContractor(Integer contractorId) throws Exception {
+    @Override
+    public void deleteContractor(Long contractorId) throws Exception {
         Optional<Contractor> contractor = contractorRepository.findById(contractorId);
 
         if(!(contractor.isPresent())){
@@ -45,30 +49,33 @@ public class ContractorServiceImpl implements ContractorService{
 
     }
 
-    public Contractor saveContractor(Contractor contractor) throws Exception {
+    @Override
+    public ContractorDto saveContractor(ContractorDto contractor) throws Exception {
         //meybe in the future there will be veryfication if the contractor alredy exists in the db
         // for now only verification is using annotation in entity class
         Contractor resultedContractor = null;
         try {
-            resultedContractor = new Contractor();
-            resultedContractor = contractorRepository.save(contractor);
+            resultedContractor = contractorRepository.save(ContractorMapper.castContractorDtoToContractor(contractor));
         }catch (Exception e){
             throw new Exception(e.getCause());
         }
 
-        return resultedContractor;
+        return ContractorMapper.castContractToContractorDto(resultedContractor);
     }
 
-    public Contractor getSpecificContractor(Integer contractorId) throws Exception {
+    @Override
+    public ContractorDtoDetails getSpecificContractor(Long contractorId) throws Exception {
         Optional<Contractor> contractor = contractorRepository.findById(contractorId);
 
         if(!(contractor.isPresent())){
             throw new Exception("Contractor with given id does not exist");
         }
-        return contractor.get();
+
+        return ContractorMapper.castContractorToContractorDtoDetails(contractor.get());
     }
 
-    public Set<Contractor> getAllContractors(){
+    @Override
+    public Set<ContractorDto> getAllContractors(){
         Iterable<Contractor> contractors = contractorRepository.findAll();
         return ContractorMapper.castIterableCompanyToSet(contractors);
     }

@@ -1,28 +1,29 @@
 package com.time_tracker.backendtime_tracker.Entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import org.hibernate.validator.constraints.Range;
+
+import javax.persistence.*;
+import javax.validation.constraints.*;
+import java.util.HashSet;
+import java.util.Set;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
-@Entity (name = "Project")
-@Table (name = "project")
-@Data
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Getter
+@Setter
+@ToString
 public class Project {
 
-    @jakarta.persistence.Id
+    @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id", nullable = false)
-    private Integer id;
+    private Long id;
 
+    @Getter
     @DateTimeFormat(pattern="yyyy-MM-dd")
     @Column(name = "start_date", nullable = false)
     private Date startDate;
@@ -33,7 +34,7 @@ public class Project {
 
     @Min(1)
     @Column(name = "daily_salary", nullable = false)
-    private Float dailySalary;
+    private Float contractorDailySalary;
 
 
     @NotNull
