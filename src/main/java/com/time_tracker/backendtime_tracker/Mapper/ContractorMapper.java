@@ -2,9 +2,9 @@ package com.time_tracker.backendtime_tracker.Mapper;
 
 import com.time_tracker.backendtime_tracker.Dtos.Contractor.ContractorDto;
 import com.time_tracker.backendtime_tracker.Dtos.Contractor.ContractorDtoDetails;
-import com.time_tracker.backendtime_tracker.Dtos.Contractor.ContractorDtoProjects;
+import com.time_tracker.backendtime_tracker.Dtos.Contractor.ContractorDtoWithContracts;
 import com.time_tracker.backendtime_tracker.Entities.Contractor;
-import com.time_tracker.backendtime_tracker.Entities.Project;
+import com.time_tracker.backendtime_tracker.Entities.Contract;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -12,12 +12,12 @@ import java.util.Set;
 
 public class ContractorMapper {
 
-    public static Set<ContractorDto> castIterableCompanyToSet(Iterable<Contractor> contractors){
+    public static Set<ContractorDto> castIterableToContractorDtoSet(Iterable<Contractor> contractors){
 
         Set<ContractorDto> resultSet = new HashSet<>();
 
         for(Contractor contractor : contractors){
-            resultSet.add(ContractorMapper.castContractToContractorDto(contractor));
+            resultSet.add(ContractorMapper.castContractorToContractorDto(contractor));
         }
 
         return resultSet;
@@ -30,40 +30,41 @@ public class ContractorMapper {
         String surname = Objects.isNull(newContractor.getSurname())? oldContractor.getSurname() : newContractor.getSurname();
         String department = Objects.isNull(newContractor.getDepartment())? oldContractor.getDepartment() : newContractor.getDepartment();
         String position = Objects.isNull(newContractor.getPosition())? oldContractor.getPosition() : newContractor.getPosition();
+        Long pesel = Objects.isNull(newContractor.getPesel())? oldContractor.getPesel() : newContractor.getPesel();
 
-        return new Contractor(id, name, surname, department, position, oldContractor.getProjects());
+        return new Contractor(id, name, surname, department, position, pesel, oldContractor.getContracts());
     }
 
-    public static ContractorDtoProjects castContractorProjectToContractorDtoProjects(Project project){
-        ContractorDtoProjects contractorDtoProjects = new ContractorDtoProjects();
+    public static ContractorDtoWithContracts castProjectToContractorDtoProjects(Contract contract){
+        ContractorDtoWithContracts contractorDtoWithContracts = new ContractorDtoWithContracts();
 
-        contractorDtoProjects.setProjectId(project.getId());
-        contractorDtoProjects.setDescription(project.getDescription());
-        contractorDtoProjects.setStartDate(project.getStartDate());
-        contractorDtoProjects.setEndDate(project.getEndDate());
-        contractorDtoProjects.setCompanyName(project.getCompany().getName());
-        contractorDtoProjects.setCompanyIndustry(project.getCompany().getIndustry());
-        contractorDtoProjects.setContractorDailySalary(project.getContractorDailySalary());
+        contractorDtoWithContracts.setContractId(contract.getId());
+        contractorDtoWithContracts.setContractDescription(contract.getDescription());
+        contractorDtoWithContracts.setContractStartDate(contract.getStartDate());
+        contractorDtoWithContracts.setContractEndDate(contract.getEndDate());
+        contractorDtoWithContracts.setCompanyName(contract.getCompany().getName());
+        contractorDtoWithContracts.setCompanyIndustry(contract.getCompany().getIndustry());
+        contractorDtoWithContracts.setContractDailySalary(contract.getDailySalary());
 
-        return contractorDtoProjects;
+        return contractorDtoWithContracts;
     }
 
     public static Contractor castContractorDtoToContractor(ContractorDto contractorDto){
-        return new Contractor(contractorDto.getId(), contractorDto.getName(), contractorDto.getSurname(), contractorDto.getPosition(), contractorDto.getDepartment(), null);
+        return new Contractor(contractorDto.getId(), contractorDto.getName(), contractorDto.getSurname(), contractorDto.getDepartment(),contractorDto.getPosition(), contractorDto.getPesel(), null);
     }
 
-    public static ContractorDto castContractToContractorDto(Contractor conntractor){
-        return new ContractorDto(conntractor.getId(), conntractor.getName(), conntractor.getSurname(), conntractor.getPosition(), conntractor.getDepartment());
+    public static ContractorDto castContractorToContractorDto(Contractor contractor){
+        return new ContractorDto(contractor.getId(), contractor.getName(), contractor.getSurname(), contractor.getPosition(), contractor.getDepartment(), contractor.getPesel());
     }
 
     public static ContractorDtoDetails castContractorToContractorDtoDetails(Contractor contractor){
-        ContractorDto contractorDto = new ContractorDto(contractor.getId(), contractor.getName(), contractor.getSurname(), contractor.getPosition(), contractor.getDepartment());
-        Set<ContractorDtoProjects> contractorDtoProjectsSet = new HashSet<>();
+        ContractorDto contractorDto = castContractorToContractorDto(contractor);
+        Set<ContractorDtoWithContracts> contractorDtoWithContractsSet = new HashSet<>();
 
-        for (Project project : contractor.getProjects()){
-            contractorDtoProjectsSet.add(castContractorProjectToContractorDtoProjects(project));
+        for (Contract contract : contractor.getContracts()){
+            contractorDtoWithContractsSet.add(castProjectToContractorDtoProjects(contract));
         }
 
-        return new ContractorDtoDetails(contractorDto, contractorDtoProjectsSet);
+        return new ContractorDtoDetails(contractorDto, contractorDtoWithContractsSet);
     }
 }

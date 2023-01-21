@@ -3,8 +3,8 @@ package com.time_tracker.backendtime_tracker.Services.Contractor;
 import com.time_tracker.backendtime_tracker.Dtos.Contractor.ContractorDto;
 import com.time_tracker.backendtime_tracker.Dtos.Contractor.ContractorDtoDetails;
 import com.time_tracker.backendtime_tracker.Entities.Contractor;
-import com.time_tracker.backendtime_tracker.Mapper.CompanyMapper;
 import com.time_tracker.backendtime_tracker.Mapper.ContractorMapper;
+import com.time_tracker.backendtime_tracker.Repositories.ContractRepository;
 import com.time_tracker.backendtime_tracker.Repositories.ContractorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,14 +17,21 @@ public class ContractorServiceImpl implements ContractorService{
 
     @Autowired
     private ContractorRepository contractorRepository;
+    @Autowired
+    private ContractRepository contractRepository;
     @Override
-    public ContractorDto updateContractor(ContractorDto contractorDto) throws Exception {
+    public ContractorDto updateContractor(Long contractId, ContractorDto contractorDto) throws Exception {
         Contractor updateContractor = new Contractor();
 
-        Optional<Contractor> resultContractor = contractorRepository.findById(contractorDto.getId());
+        Optional<Contractor> resultContractor = contractorRepository.findById(contractId);
 
         if(!(resultContractor.isPresent())){
             throw new Exception("Contractor with given id does not exist");
+        }
+
+
+        if(contractorDto.getPesel() != resultContractor.get().getPesel() && contractorDto.getPesel() != null){
+            throw new Exception("Change the pesel is forbidden");
         }
 
         updateContractor = ContractorMapper.updateCompanyFields(resultContractor.get(), ContractorMapper.castContractorDtoToContractor(contractorDto));
@@ -35,7 +42,7 @@ public class ContractorServiceImpl implements ContractorService{
             throw new Exception(e.getCause().getCause());
         }
 
-        return ContractorMapper.castContractToContractorDto(updateContractor);
+        return ContractorMapper.castContractorToContractorDto(updateContractor);
     }
     @Override
     public void deleteContractor(Long contractorId) throws Exception {
@@ -43,24 +50,26 @@ public class ContractorServiceImpl implements ContractorService{
 
         if(!(contractor.isPresent())){
             throw new Exception("Contractor with given id does not exist");
+        }else {
+            contractRepository.deleteAll(contractRepository.findByContractorId(contractorId));
         }
 
-        contractorRepository.deleteById(contractorId);
+        //contractorRepository.deleteById(contractorId);
 
     }
 
     @Override
-    public ContractorDto saveContractor(ContractorDto contractor) throws Exception {
+    public ContractorDto saveContractor(ContractorDto contractorDto) throws Exception {
         //meybe in the future there will be veryfication if the contractor alredy exists in the db
         // for now only verification is using annotation in entity class
         Contractor resultedContractor = null;
         try {
-            resultedContractor = contractorRepository.save(ContractorMapper.castContractorDtoToContractor(contractor));
+            resultedContractor = contractorRepository.save(ContractorMapper.castContractorDtoToContractor(contractorDto));
         }catch (Exception e){
             throw new Exception(e.getCause());
         }
 
-        return ContractorMapper.castContractToContractorDto(resultedContractor);
+        return ContractorMapper.castContractorToContractorDto(resultedContractor);
     }
 
     @Override
@@ -77,7 +86,7 @@ public class ContractorServiceImpl implements ContractorService{
     @Override
     public Set<ContractorDto> getAllContractors(){
         Iterable<Contractor> contractors = contractorRepository.findAll();
-        return ContractorMapper.castIterableCompanyToSet(contractors);
+        return ContractorMapper.castIterableToContractorDtoSet(contractors);
     }
 
 }

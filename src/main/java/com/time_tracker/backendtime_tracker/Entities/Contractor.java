@@ -1,6 +1,8 @@
 package com.time_tracker.backendtime_tracker.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
@@ -16,25 +18,35 @@ import java.util.Set;
 public class Contractor {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "contractorGenerator", sequenceName = "CONTRACTOR_SEQUENCE", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "contractorGenerator")
     @Column(name = "id", nullable = false)
     private Long id;
 
-
-    @Column(name = "name", length = 15, nullable = false)
+    @NotNull(message = "Name cannot be null")
+    @Length(max = 15, message = "Maximum 15 characters")
+    @Column(name = "name")
     private String name;
 
-    @Column(name = "surname", length = 20, nullable = false)
+    @NotNull(message = "Surname cannot be null")
+    @Length(max = 20, message = "Maximum 20 characters")
+    @Column(name = "surname")
     private String surname;
 
 
+    @Length(max = 20, message = "Departament 20 characters")
     @Column(name = "department", length = 20, nullable = true)
     private String department;
 
-    @Size(max = 20)
+    @NotNull(message = "Position can not be null")
+    @Size(max = 20, message = "Position max size is 20 ")
     @Column(name = "position", nullable = false)
     private String position;
+    @NotNull(message = "Pesel can not be null")
+    @Digits(integer=11, fraction=0, message = "Pesel must have 11 digits")
+    private  Long pesel;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "contractor")
-    private Set<Project> projects = new HashSet<>();
+    private Set<Contract> contracts = new HashSet<>();
 }

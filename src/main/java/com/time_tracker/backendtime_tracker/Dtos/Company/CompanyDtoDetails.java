@@ -13,7 +13,7 @@ import java.util.Set;
 @Builder
 public class CompanyDtoDetails {
     @JsonProperty("companyInfo")
-    CompanyDto companyDto;
+    private CompanyDto companyDto;
     @JsonProperty("companyContracts")
-    Set<CompanyDtoWithProject> companyDtoWithProjects = new HashSet<>();
+    private Set<CompanyDtoWithContracts> companyDtoWithContracts = new HashSet<>();
 }

@@ -8,9 +8,10 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ContractorDto {
-    Long id;
-    String name;
-    String surname;
-    String position;
-    String department;
+    private Long id;
+    private String name;
+    private String surname;
+    private String position;
+    private String department;
+    private Long pesel;
 }

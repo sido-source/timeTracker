@@ -57,38 +57,38 @@ public class CompanyController {
         return new ResponseEntity<Set<CompanyDto>>(companySet, HttpStatus.OK);
     }
 
-    @PostMapping("update")
-    public ResponseEntity<String> updateCompany( @RequestBody CompanyDto companyDto){
+    @PostMapping("update/{id}")
+    public ResponseEntity<CompanyDto> updateCompany(@PathVariable Long id, @RequestBody CompanyDto companyDto){
         //if(companyService.add(companyDto)) "Succes" else "false"
-        CompanyDto updatedCompany;
+        CompanyDto updatedCompany = null;
 
         try {
-            updatedCompany = companyService.updateCompany(companyDto);
+            updatedCompany = companyService.updateCompany(id, companyDto);
         }catch (Exception e){
-            return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<CompanyDto>(updatedCompany, HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity<String>("Succesfully updated", HttpStatus.OK);
+        return new ResponseEntity<CompanyDto>(updatedCompany, HttpStatus.OK);
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Object> handleValidationExceptions(
-            MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
-        });
-        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
-    }
+//    @ExceptionHandler(MethodArgumentNotValidException.class)
+//    public ResponseEntity<Object> handleValidationExceptions(
+//            MethodArgumentNotValidException ex) {
+//        Map<String, String> errors = new HashMap<>();
+//        ex.getBindingResult().getAllErrors().forEach((error) -> {
+//            String fieldName = ((FieldError) error).getField();
+//            String errorMessage = error.getDefaultMessage();
+//            errors.put(fieldName, errorMessage);
+//        });
+//        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+//    }
 
 
-    @DeleteMapping("delete/{name}")
-    public ResponseEntity<String> deleteCompany(@PathVariable("name") String companyName){
+    @DeleteMapping("delete/{id}")
+    public ResponseEntity<String> deleteCompany(@PathVariable("id") Long companyId){
 
         try{
-            companyService.deleteCompany(companyName);
+            companyService.deleteCompany(companyId);
         }catch (Exception e){
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
@@ -96,12 +96,12 @@ public class CompanyController {
         return new ResponseEntity<String>("Success", HttpStatus.OK);
     }
 
-    @GetMapping("get/{name}")
-    public ResponseEntity<CompanyDtoDetails> getSpecificCompany(@PathVariable("name") String companyName) throws Exception {
+    @GetMapping("get/{id}")
+    public ResponseEntity<CompanyDtoDetails> getSpecificCompany(@PathVariable("id") Long companyId) throws Exception {
 
         CompanyDtoDetails companyDtoDetails = null;
         try{
-            companyDtoDetails = companyService.getSpecificCompany(companyName);
+            companyDtoDetails = companyService.getSpecificCompany(companyId);
         }catch(Exception e){
             return new ResponseEntity<CompanyDtoDetails>(companyDtoDetails, HttpStatus.BAD_REQUEST);
         }

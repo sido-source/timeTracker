@@ -1,13 +1,11 @@
 package com.time_tracker.backendtime_tracker.Entities;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
-import org.aspectj.bridge.IMessage;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
-import java.time.Year;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,13 +19,14 @@ import java.util.Set;
 public class Company {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "companyGenerator", sequenceName = "COMPANY_SEQUENCE", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "companyGenerator")
     @Column(name = "company_id", nullable = false)
     private Long id;
 
 
     @NotNull(message = "Name cannot be null")
-    @Length(max = 15, message = "Maximum 15 characters")
+    @Length(max = 25, message = "Maximum 15 characters")
     @Column(name = "name")
     private String name;
 
@@ -46,7 +45,8 @@ public class Company {
     @Column(name = "budget", nullable = true)
     private Integer budget;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "company")
-    private Set<Project> projects = new HashSet<>();
+    private Set<Contract> contracts = new HashSet<>();
 
 }

@@ -4,8 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
-import java.util.HashSet;
-import java.util.Set;
+
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
@@ -16,26 +15,31 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
-public class Project {
+public class Contract {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "contractGenerator", sequenceName = "CONTRACT_SEQUENCE", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "contractGenerator")
     @Column(name = "id", nullable = false)
     private Long id;
 
     @Getter
+    @NotNull(message = "Start date can not be null")
     @DateTimeFormat(pattern="yyyy-MM-dd")
-    @Column(name = "start_date", nullable = false)
+    @Column(name = "start_date")
     private Date startDate;
 
     @DateTimeFormat(pattern="yyyy-MM-dd")
-    @Column(name = "end_date", nullable = false)
+    @NotNull(message = "End date can not be null")
+    @Column(name = "end_date")
     private Date endDate;
 
-    @Min(1)
+    @Min(value = 130, message = "Minimal daily salary is set to 130")
     @Column(name = "daily_salary", nullable = false)
-    private Float contractorDailySalary;
+    private Float dailySalary;
 
+    @Column(name = "description", length = 150, nullable = true)
+    private String description;
 
     @NotNull
     @ManyToOne(cascade = CascadeType.ALL)
@@ -50,6 +54,4 @@ public class Project {
     @Setter
     private Contractor contractor;
 
-    @Column(name = "description", length = 150, nullable = true)
-    private String description;
 }

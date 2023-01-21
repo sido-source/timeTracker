@@ -25,11 +25,13 @@ public class ContractorController {
     @Autowired
     private ContractorRepository contractorRepository;
 
-    @PostMapping("update")
-    public ResponseEntity<ContractorDto> updateContractor(@RequestBody ContractorDto contractor){
+    @PostMapping("update/{id}")
+    public ResponseEntity<ContractorDto> updateContractor(@PathVariable Long id, @RequestBody ContractorDto contractorDto){
         ContractorDto resultContractor =null;
+
+
         try {
-            resultContractor = contractorService.updateContractor(contractor);
+            resultContractor = contractorService.updateContractor(id, contractorDto);
         }catch (Exception e){
             return new ResponseEntity<ContractorDto>(resultContractor, HttpStatus.BAD_REQUEST);
         }
@@ -38,10 +40,10 @@ public class ContractorController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteContractor(Long contractorId){
+    public ResponseEntity<String> deleteContractor(@PathVariable Long id){
 
         try{
-            contractorService.deleteContractor(contractorId);
+            contractorService.deleteContractor(id);
         }catch (Exception e){
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
@@ -51,7 +53,7 @@ public class ContractorController {
 
     @GetMapping("get")
     public ResponseEntity<Set<ContractorDto>> getAllContractors(){
-        Set<ContractorDto> contractorSet = new HashSet<>();
+        Set<ContractorDto> contractorSet = new HashSet<ContractorDto>();
 
         try{
             contractorSet = contractorService.getAllContractors();
@@ -92,6 +94,6 @@ public class ContractorController {
     @GetMapping("/test/get/{id}")
     public ResponseEntity<ContractorDto> test(@PathVariable Long id){
         Optional<Contractor> contractor = contractorRepository.findById(id);
-        return new ResponseEntity<ContractorDto>(ContractorMapper.castContractToContractorDto(contractor.get()), HttpStatus.OK);
+        return new ResponseEntity<ContractorDto>(ContractorMapper.castContractorToContractorDto(contractor.get()), HttpStatus.OK);
     }
 }

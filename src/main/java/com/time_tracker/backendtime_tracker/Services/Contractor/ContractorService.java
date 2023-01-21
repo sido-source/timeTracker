@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import java.util.Set;
 
 public interface ContractorService {
-    public ContractorDto updateContractor(ContractorDto contractorDto) throws Exception;
+    public ContractorDto updateContractor(Long contractId, ContractorDto contractorDto) throws Exception;
 
     public void deleteContractor(Long contractorId) throws Exception;
 

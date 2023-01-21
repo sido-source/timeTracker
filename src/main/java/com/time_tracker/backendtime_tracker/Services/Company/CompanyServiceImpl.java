@@ -2,18 +2,18 @@ package com.time_tracker.backendtime_tracker.Services.Company;
 
 import com.time_tracker.backendtime_tracker.Dtos.Company.CompanyDto;
 import com.time_tracker.backendtime_tracker.Dtos.Company.CompanyDtoDetails;
-import com.time_tracker.backendtime_tracker.Dtos.Company.CompanyDtoWithProject;
 import com.time_tracker.backendtime_tracker.Entities.Company;
 import com.time_tracker.backendtime_tracker.Mapper.CompanyMapper;
 import com.time_tracker.backendtime_tracker.Repositories.CompanyRepository;
+import com.time_tracker.backendtime_tracker.Repositories.ContractRepository;
+import com.time_tracker.backendtime_tracker.Repositories.ContractorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.Set;
 
-import static com.time_tracker.backendtime_tracker.Mapper.CompanyMapper.castIterableToSet;
+import static com.time_tracker.backendtime_tracker.Mapper.CompanyMapper.castIterableToCompanyDtoSet;
 
 //This class uses DTO that's why id is not given, for instance: to client or user
 
@@ -22,13 +22,15 @@ public class CompanyServiceImpl implements CompanyService{
 
     @Autowired
     private CompanyRepository companyRepository;
+    @Autowired
+    private ContractRepository contractRepository;
 
     @Override
     public CompanyDto saveCompany(CompanyDto companyDto) throws Exception {
 
-        Company newCompany = CompanyMapper.mappedToCompany(companyDto);
+        Company newCompany = CompanyMapper.castCompanyDtoToCompany(companyDto);
 
-        if(companyRepository.getCompanyByName(companyDto.getName()).isPresent()){
+        if(companyRepository.getCompanyById(companyDto.getId()).isPresent()){
             throw new Exception("Given company name already exists");
         }
 
@@ -37,15 +39,20 @@ public class CompanyServiceImpl implements CompanyService{
         }catch(Exception e){
             throw new Exception(e.getCause());
         }
-        return CompanyMapper.mappedToCompanyDTO(newCompany);
+        return CompanyMapper.castCompanyToCompanyDTO(newCompany);
     }
 
     @Override
-    public void deleteCompany(String companyName) throws Exception {
-        Optional<Company> returnedCompany = companyRepository.getCompanyByName(companyName);
+    public void deleteCompany(Long companyId) throws Exception {
+        Optional<Company> returnedCompany = companyRepository.getCompanyById(companyId);
 
         if(returnedCompany.isPresent()){
-            companyRepository.deleteById(returnedCompany.get().getId());
+//            if(companyRepository.findCompanyInContract(companyId).isPresent()){
+//                companyRepository.deleteContract(companyRepository.findCompanyInContract(companyId).get().getId());
+//                companyRepository.deleteById(companyId);
+//            }
+            contractRepository.deleteAll(contractRepository.findByCompanyId(companyId));
+            //companyRepository.deleteById(companyId);
         }else{
             throw new Exception("Given company name does not exist");
         }
@@ -55,13 +62,13 @@ public class CompanyServiceImpl implements CompanyService{
     @Override
     public Set<CompanyDto> getAllCompanies() {
         Iterable<Company> allCompanies = companyRepository.findAll();
-        return castIterableToSet(allCompanies);
+        return castIterableToCompanyDtoSet(allCompanies);
     }
 
     @Override
-    public CompanyDtoDetails getSpecificCompany(String companyName) throws Exception {
+    public CompanyDtoDetails getSpecificCompany(Long companyId) throws Exception {
 
-        Optional<Company> returnedCompany = companyRepository.getCompanyByName(companyName);
+        Optional<Company> returnedCompany = companyRepository.getCompanyById(companyId);
 
         if(!(returnedCompany.isPresent())){
             throw new Exception("Given company name does not exist");
@@ -71,17 +78,16 @@ public class CompanyServiceImpl implements CompanyService{
     }
 
     @Override
-    public CompanyDto updateCompany(CompanyDto companyDto) throws Exception {
+    public CompanyDto updateCompany(Long id, CompanyDto companyDto) throws Exception {
         Company returnedCompany = null;
-        Integer id;
 
-        if(!(companyRepository.getCompanyByName(companyDto.getName()).isPresent())){
+        if(!(companyRepository.getCompanyById(id).isPresent())){
             throw new Exception("Given company name does not exists");
         }else {
-            returnedCompany = companyRepository.getCompanyByName(companyDto.getName()).get();
+            returnedCompany = companyRepository.getCompanyById(id).get();
         }
 
-        returnedCompany = CompanyMapper.updateCompanyFields(returnedCompany, CompanyMapper.mappedToCompany(companyDto));
+        returnedCompany = CompanyMapper.updateCompanyFields(returnedCompany, CompanyMapper.castCompanyDtoToCompany(companyDto));
 
         try {
             returnedCompany = companyRepository.save(returnedCompany);
@@ -89,6 +95,6 @@ public class CompanyServiceImpl implements CompanyService{
             throw new Exception(e.getCause().getCause());
         }
 
-        return CompanyMapper.mappedToCompanyDTO(returnedCompany);
+        return CompanyMapper.castCompanyToCompanyDTO(returnedCompany);
     }
 }

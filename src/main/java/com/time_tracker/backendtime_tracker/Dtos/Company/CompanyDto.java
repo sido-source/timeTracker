@@ -8,6 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CompanyDto {
+    private Long id;
     private String name;
     private String industry;
     private Integer foundedYear;

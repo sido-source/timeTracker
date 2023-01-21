@@ -2,10 +2,9 @@ package com.time_tracker.backendtime_tracker.Mapper;
 
 import com.time_tracker.backendtime_tracker.Dtos.Company.CompanyDto;
 import com.time_tracker.backendtime_tracker.Dtos.Company.CompanyDtoDetails;
-import com.time_tracker.backendtime_tracker.Dtos.Company.CompanyDtoWithProject;
+import com.time_tracker.backendtime_tracker.Dtos.Company.CompanyDtoWithContracts;
 import com.time_tracker.backendtime_tracker.Entities.Company;
-import com.time_tracker.backendtime_tracker.Entities.Project;
-import org.springframework.context.annotation.Bean;
+import com.time_tracker.backendtime_tracker.Entities.Contract;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -14,8 +13,9 @@ import java.util.Set;
 @Service
 public class CompanyMapper {
 
-    public static CompanyDto mappedToCompanyDTO(Company company){
+    public static CompanyDto castCompanyToCompanyDTO(Company company){
         CompanyDto companyDto = new CompanyDto();
+        companyDto.setId(company.getId());
         companyDto.setName(company.getName());
         companyDto.setBudget(company.getBudget());
         companyDto.setIndustry(company.getIndustry());
@@ -24,7 +24,7 @@ public class CompanyMapper {
         return companyDto;
     }
 
-    public static Company mappedToCompany(CompanyDto companyDto){
+    public static Company castCompanyDtoToCompany(CompanyDto companyDto){
         Company company = new Company();
         company.setName(companyDto.getName());
         company.setBudget(companyDto.getBudget());
@@ -34,11 +34,11 @@ public class CompanyMapper {
         return company;
     }
 
-    public static Set<CompanyDto> castIterableToSet(Iterable<Company> iterable){
+    public static Set<CompanyDto> castIterableToCompanyDtoSet(Iterable<Company> iterable){
         Set<CompanyDto> companySet = new HashSet<>();
 
         for (Company company : iterable) {
-            companySet.add(CompanyMapper.mappedToCompanyDTO(company));
+            companySet.add(CompanyMapper.castCompanyToCompanyDTO(company));
         }
         return companySet;
     }
@@ -64,15 +64,31 @@ public class CompanyMapper {
         return resultCompany;
     }
 
-    public static CompanyDtoDetails castCompanyToCompanyDtoDetails(Company company){
-        CompanyDto companyDto = new CompanyDto(company.getName(), company.getIndustry(), company.getFoundedYear(), company.getBudget());
-        Set<CompanyDtoWithProject> companyDtoWithProjectSet  = new HashSet<>();
+    public static CompanyDtoWithContracts castProjectToCompanyDtoWithProject(Contract contract){
+        CompanyDtoWithContracts companyDtoWithContracts = new CompanyDtoWithContracts();
 
-        for(Project project : company.getProjects()){
-            companyDtoWithProjectSet.add(ProjectMapper.castProjectToCompanyDtoWithProject(project));
+        companyDtoWithContracts.setContractId(contract.getId());
+        companyDtoWithContracts.setContractDescription(contract.getDescription());
+        companyDtoWithContracts.setContractorDailySalary(contract.getDailySalary());
+        companyDtoWithContracts.setContractStartDate(contract.getStartDate());
+        companyDtoWithContracts.setContractEndDate(contract.getEndDate());
+        companyDtoWithContracts.setContractorName(contract.getContractor().getName());
+        companyDtoWithContracts.setContractorSurname(contract.getContractor().getSurname());
+        companyDtoWithContracts.setContractorPosition(contract.getContractor().getPosition());
+        companyDtoWithContracts.setContractorPesel(contract.getContractor().getPesel());
+
+        return companyDtoWithContracts;
+    }
+
+    public static CompanyDtoDetails castCompanyToCompanyDtoDetails(Company company){
+        CompanyDto companyDto = new CompanyDto(company.getId(), company.getName(), company.getIndustry(), company.getFoundedYear(), company.getBudget());
+        Set<CompanyDtoWithContracts> companyDtoWithContractsSet = new HashSet<>();
+
+        for(Contract contract : company.getContracts()){
+            companyDtoWithContractsSet.add(castProjectToCompanyDtoWithProject(contract));
         }
 
-        return new CompanyDtoDetails(companyDto, companyDtoWithProjectSet);
+        return new CompanyDtoDetails(companyDto, companyDtoWithContractsSet);
 
     }
 }
