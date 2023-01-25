@@ -17,6 +17,7 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/api/contractor")
+@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PUT}, allowCredentials = "true")
 public class ContractorController {
 
     @Autowired
