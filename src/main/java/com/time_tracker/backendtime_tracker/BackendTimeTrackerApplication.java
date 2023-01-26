@@ -1,11 +1,14 @@
 package com.time_tracker.backendtime_tracker;
 
+import com.time_tracker.backendtime_tracker.InitialInsertData.InitialInsertUsers;
+import com.time_tracker.backendtime_tracker.Repositories.UserRepository;
+import com.time_tracker.backendtime_tracker.Services.User.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Bean;
 
 import java.util.Arrays;
 
@@ -19,6 +22,8 @@ public class BackendTimeTrackerApplication implements CommandLineRunner {
 
 	@Autowired
 	private ApplicationContext appContext;
+	@Autowired
+	private UserRepository userRepository;
 
 //	@Bean
 //	private companyRepository;
@@ -41,5 +46,10 @@ public class BackendTimeTrackerApplication implements CommandLineRunner {
 			System.out.println(bean);
 		}
 
+	}
+
+	@Bean
+	public CommandLineRunner run(UserService userService) {
+		return new InitialInsertUsers().run(userService);
 	}
 }
