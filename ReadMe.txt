@@ -26,3 +26,9 @@ Functionalities:
  - save object (2 method from repository)
 
  Service interfaces define business methods used by controller, but repositories define methods used in service
+
+
+ Authentication vs autorization
+ - authentication is the process of recognizing who you are, and after it you grant access to some functionalities
+ - autorization is the process of giving you the special rights based on authentication. It decides which resources are
+ available for you
