@@ -26,3 +26,9 @@ Functionalities:
  - save object (2 method from repository)
 
  Service interfaces define business methods used by controller, but repositories define methods used in service
+
+
+
+ Start developing login/register feature:
+ - at the beginning I added 2 entities: User and Role and specify ERole, where I keep all of the rules
+ - next I created repositories to be able to do some database operations
