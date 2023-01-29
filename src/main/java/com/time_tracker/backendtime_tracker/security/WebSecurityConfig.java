@@ -3,6 +3,7 @@ package com.time_tracker.backendtime_tracker.security;
 import com.time_tracker.backendtime_tracker.Services.UserDetails.UserDetailsServiceImpl;
 import com.time_tracker.backendtime_tracker.security.jwt.AuthEntryPointJwt;
 import com.time_tracker.backendtime_tracker.security.jwt.AuthTokenFilter;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-@EnableWebSecurity //allows Spring to find and automatically apply the class to the global Web Security.
+@EnableWebSecurity
 @EnableGlobalMethodSecurity(
 		// securedEnabled = true,
 		// jsr250Enabled = true,
@@ -38,7 +39,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-		authenticationManagerBuilder.userDetailsService((UserDetailsService) userDetailsServiceImpl).passwordEncoder(passwordEncoder());
+		authenticationManagerBuilder.userDetailsService(userDetailsServiceImpl).passwordEncoder(passwordEncoder());
 		//authenticationManagerBuilder.userDetailsService()
 	}
 
