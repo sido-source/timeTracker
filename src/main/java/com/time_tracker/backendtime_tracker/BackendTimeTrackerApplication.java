@@ -1,10 +1,13 @@
 package com.time_tracker.backendtime_tracker;
 
+import com.time_tracker.backendtime_tracker.Repositories.RoleRepository;
+import com.time_tracker.backendtime_tracker.initialDataLoading.InsertRules;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
 import java.util.Arrays;
@@ -41,5 +44,10 @@ public class BackendTimeTrackerApplication implements CommandLineRunner {
 			System.out.println(bean);
 		}
 
+	}
+
+	@Bean
+	public CommandLineRunner run(RoleRepository roleRepository) {
+		return new InsertRules().run(roleRepository);
 	}
 }
