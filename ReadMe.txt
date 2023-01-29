@@ -28,7 +28,37 @@ Functionalities:
  Service interfaces define business methods used by controller, but repositories define methods used in service
 
 
-
+-----------------------------------------------------------------------------------------------------------
  Start developing login/register feature:
  - at the beginning I added 2 entities: User and Role and specify ERole, where I keep all of the rules
  - next I created repositories to be able to do some database operations
+
+Configure Spring Security
+is the crux of our security implementation. It configures cors, csrf, session management, rules for protected resources.
+We can also extend and customize the default configuration that contains the elements below.
+
+1. security -> WebSecurityConfig
+– @EnableWebSecurity allows Spring to find and automatically apply the class to the global Web Security.
+
+– @EnableGlobalMethodSecurity provides AOP security on methods. It enables @PreAuthorize, @PostAuthorize, it also supports JSR-250. You can find more parameters in configuration in Method Security Expressions.
+
+– We override the configure(HttpSecurity http) method from WebSecurityConfigurerAdapter interface. It tells Spring Security how we configure CORS and CSRF, when we want to require all users to be authenticated or not, which filter (AuthTokenFilter) and when we want it to work (filter before UsernamePasswordAuthenticationFilter), which Exception Handler is chosen (AuthEntryPointJwt).
+
+– Spring Security will load User details to perform authentication & authorization. So it has UserDetailsService interface that we need to implement.
+
+– The implementation of UserDetailsService will be used for configuring DaoAuthenticationProvider by AuthenticationManagerBuilder.userDetailsService() method.
+
+– We also need a PasswordEncoder for the DaoAuthenticationProvider. If we don’t specify, it will use plain text.
+
+
+
+IMPLEMENT UserDetails & UserDetailsService
+Look at the code above, you can notice that we convert Set<Role> into List<GrantedAuthority>. It is important to work with Spring Security and Authentication object later.
+
+We need UserDetailsService for getting UserDetails object.
+
+we get full custom User object using UserRepository, then we build a UserDetails object using static build() method.
+
+
+
+
