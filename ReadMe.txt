@@ -75,7 +75,9 @@ After this, everytime you want to get UserDetails, just use SecurityContext like
 UserDetails userDetails =
 	(UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-
+4.Handle Authentication Exception
+  Now we create AuthEntryPointJwt class that implements AuthenticationEntryPoint interface. Then we override the commence() method. This method will be triggerd
+  anytime unauthenticated User requests a secured HTTP resource and an AuthenticationException is thrown.
 
 
 
