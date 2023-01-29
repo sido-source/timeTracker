@@ -29,7 +29,8 @@ Functionalities:
 
 
 -----------------------------------------------------------------------------------------------------------
- Start developing login/register feature:
+ Start developing login/register feature, this section is based on: https://www.bezkoder.com/spring-boot-jwt-authentication/
+
  - at the beginning I added 2 entities: User and Role and specify ERole, where I keep all of the rules
  - next I created repositories to be able to do some database operations
 
@@ -52,12 +53,29 @@ We can also extend and customize the default configuration that contains the ele
 
 
 
-IMPLEMENT UserDetails & UserDetailsService
+2. IMPLEMENT UserDetails & UserDetailsService
 Look at the code above, you can notice that we convert Set<Role> into List<GrantedAuthority>. It is important to work with Spring Security and Authentication object later.
 
 We need UserDetailsService for getting UserDetails object.
 
 we get full custom User object using UserRepository, then we build a UserDetails object using static build() method.
+
+
+3. Filter the Requests
+define a filter that executes once per request. So we create AuthTokenFilter class that extends OncePerRequestFilter and override doFilterInternal() method
+
+What we do inside doFilterInternal():
+– get JWT from the Authorization header (by removing Bearer prefix)
+– if the request has JWT, validate it, parse username from it
+– from username, get UserDetails to create an Authentication object
+– set the current UserDetails in SecurityContext using setAuthentication(authentication) method.
+
+After this, everytime you want to get UserDetails, just use SecurityContext like this:
+
+UserDetails userDetails =
+	(UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+
 
 
 
