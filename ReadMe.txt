@@ -80,5 +80,14 @@ UserDetails userDetails =
   anytime unauthenticated User requests a secured HTTP resource and an AuthenticationException is thrown.
 
 
+5. Define payloads for Spring RestController
+   Let me summarize the payloads for our RestAPIs:
+   – Requests:
 
+   LoginRequest: { username, password }
+   SignupRequest: { username, email, password }
+   – Responses:
+
+   JwtResponse: { token, type, id, username, email, roles }
+   MessageResponse: { message }
 
