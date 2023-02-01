@@ -2,21 +2,16 @@ package com.time_tracker.backendtime_tracker.Controllers;
 
 import com.time_tracker.backendtime_tracker.Dtos.Company.CompanyDto;
 import com.time_tracker.backendtime_tracker.Dtos.Company.CompanyDtoDetails;
-import com.time_tracker.backendtime_tracker.Entities.Company;
+import com.time_tracker.backendtime_tracker.Repositories.CompanyRepository;
 import com.time_tracker.backendtime_tracker.Services.Company.CompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.support.NullValue;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 
@@ -27,11 +22,14 @@ public class CompanyController {
 
     @Autowired
     private CompanyService companyService;
+    private final CompanyRepository companyRepository;
 
-    public CompanyController(){
+    public CompanyController(CompanyRepository companyRepository){
 
+        this.companyRepository = companyRepository;
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @PostMapping("save")
     public ResponseEntity<CompanyDto> saveCompany(@Valid @RequestBody CompanyDto companyDto){
 
@@ -46,6 +44,7 @@ public class CompanyController {
         return new ResponseEntity<CompanyDto>(companyDto, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("get")
     public ResponseEntity<Set<CompanyDto>> getAllCompanies(){
         Set<CompanyDto> companySet = null;
@@ -58,6 +57,7 @@ public class CompanyController {
         return new ResponseEntity<Set<CompanyDto>>(companySet, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('COMPANY', 'ADMIN')")
     @PostMapping("update/{id}")
     public ResponseEntity<CompanyDto> updateCompany(@PathVariable Long id, @RequestBody CompanyDto companyDto){
         //if(companyService.add(companyDto)) "Succes" else "false"
@@ -84,7 +84,7 @@ public class CompanyController {
 //        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
 //    }
 
-
+    @PreAuthorize("hasAnyRole('COMPANY', 'ADMIN')")
     @DeleteMapping("delete/{id}")
     public ResponseEntity<String> deleteCompany(@PathVariable("id") Long companyId){
 
@@ -97,8 +97,9 @@ public class CompanyController {
         return new ResponseEntity<String>("Success", HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('COMPANY', 'ADMIN')")
     @GetMapping("get/{id}")
-    public ResponseEntity<CompanyDtoDetails> getSpecificCompany(@PathVariable("id") Long companyId) throws Exception {
+    public ResponseEntity<CompanyDtoDetails> getSpecificCompanyWithContracts(@PathVariable("id") Long companyId) throws Exception {
 
         CompanyDtoDetails companyDtoDetails = null;
         try{
@@ -109,5 +110,11 @@ public class CompanyController {
 
         return new ResponseEntity<CompanyDtoDetails>(companyDtoDetails, HttpStatus.OK);
 
+    }
+
+    @PreAuthorize("hasAnyRole('COMPANY', 'ADMIN', 'USER')")
+    @GetMapping("getCompaniesForContracotr/{contractorId}")
+    public ResponseEntity<Set<CompanyDto>> getAllCompaniesForContractor(@PathVariable("contractorId") Long contractorId) throws Exception {
+        return new ResponseEntity<Set<CompanyDto>>(companyService.getAllCompaniesForContractor(contractorId), HttpStatus.OK);
     }
 }

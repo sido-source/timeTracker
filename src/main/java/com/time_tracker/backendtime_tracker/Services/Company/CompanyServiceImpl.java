@@ -3,15 +3,19 @@ package com.time_tracker.backendtime_tracker.Services.Company;
 import com.time_tracker.backendtime_tracker.Dtos.Company.CompanyDto;
 import com.time_tracker.backendtime_tracker.Dtos.Company.CompanyDtoDetails;
 import com.time_tracker.backendtime_tracker.Entities.Company;
+import com.time_tracker.backendtime_tracker.Entities.Contract;
 import com.time_tracker.backendtime_tracker.Mapper.CompanyMapper;
+import com.time_tracker.backendtime_tracker.Mapper.ContractMapper;
 import com.time_tracker.backendtime_tracker.Repositories.CompanyRepository;
 import com.time_tracker.backendtime_tracker.Repositories.ContractRepository;
 import com.time_tracker.backendtime_tracker.Repositories.ContractorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.time_tracker.backendtime_tracker.Mapper.CompanyMapper.castIterableToCompanyDtoSet;
 
@@ -24,6 +28,8 @@ public class CompanyServiceImpl implements CompanyService{
     private CompanyRepository companyRepository;
     @Autowired
     private ContractRepository contractRepository;
+
+
 
     @Override
     public CompanyDto saveCompany(CompanyDto companyDto) throws Exception {
@@ -96,5 +102,23 @@ public class CompanyServiceImpl implements CompanyService{
         }
 
         return CompanyMapper.castCompanyToCompanyDTO(returnedCompany);
+    }
+
+    @Override
+    public Set<CompanyDto> getAllCompaniesForContractor(Long contractorId) {
+
+        //show every contracts
+        // find intereesting contractors based on contrracts
+
+        Iterable<Contract> contracts = contractRepository.findByContractorId(contractorId);
+
+        Set <CompanyDto> companies = ContractMapper.castIterableToContractDtoSet(contracts).stream()
+                .map(contract -> companyRepository.findById(contract.getCompanyId()))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(CompanyMapper::castCompanyToCompanyDTO)
+                .collect(Collectors.toSet());
+
+        return companies;
     }
 }

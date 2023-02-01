@@ -5,6 +5,7 @@ import com.time_tracker.backendtime_tracker.Dtos.Contractor.ContractorDtoDetails
 import com.time_tracker.backendtime_tracker.Dtos.Contractor.ContractorDtoWithContracts;
 import com.time_tracker.backendtime_tracker.Entities.Contractor;
 import com.time_tracker.backendtime_tracker.Entities.Contract;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -67,4 +68,5 @@ public class ContractorMapper {
 
         return new ContractorDtoDetails(contractorDto, contractorDtoWithContractsSet);
     }
+    
 }

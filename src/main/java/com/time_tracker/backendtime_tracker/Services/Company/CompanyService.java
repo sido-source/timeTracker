@@ -18,4 +18,5 @@ public interface CompanyService {
 
     CompanyDto updateCompany(Long id, CompanyDto companyDto) throws Exception;
 
+    Set<CompanyDto> getAllCompaniesForContractor(Long contractorId);
 }

@@ -1,9 +1,13 @@
 package com.time_tracker.backendtime_tracker.Services.Contractor;
 
+import com.time_tracker.backendtime_tracker.Dtos.Company.CompanyDto;
 import com.time_tracker.backendtime_tracker.Dtos.Contractor.ContractorDto;
 import com.time_tracker.backendtime_tracker.Dtos.Contractor.ContractorDtoDetails;
+import com.time_tracker.backendtime_tracker.Entities.Contract;
 import com.time_tracker.backendtime_tracker.Entities.Contractor;
+import com.time_tracker.backendtime_tracker.Mapper.ContractMapper;
 import com.time_tracker.backendtime_tracker.Mapper.ContractorMapper;
+import com.time_tracker.backendtime_tracker.Repositories.CompanyRepository;
 import com.time_tracker.backendtime_tracker.Repositories.ContractRepository;
 import com.time_tracker.backendtime_tracker.Repositories.ContractorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class ContractorServiceImpl implements ContractorService{
@@ -19,6 +24,9 @@ public class ContractorServiceImpl implements ContractorService{
     private ContractorRepository contractorRepository;
     @Autowired
     private ContractRepository contractRepository;
+    @Autowired
+    private CompanyRepository companyRepository;
+
     @Override
     public ContractorDto updateContractor(Long contractId, ContractorDto contractorDto) throws Exception {
         Contractor updateContractor = new Contractor();
@@ -87,6 +95,20 @@ public class ContractorServiceImpl implements ContractorService{
     public Set<ContractorDto> getAllContractors(){
         Iterable<Contractor> contractors = contractorRepository.findAll();
         return ContractorMapper.castIterableToContractorDtoSet(contractors);
+    }
+
+    @Override
+    public Set<ContractorDto> getAllContractorsForCompany(Long companyId) {
+        Iterable<Contract> contracts = contractRepository.findByCompanyId(companyId);
+
+        Set<ContractorDto> contractors = ContractMapper.castIterableToContractDtoSet(contracts).stream()
+                .map(contract -> contractorRepository.findById(contract.getContractId()))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(ContractorMapper::castContractorToContractorDto)
+                .collect(Collectors.toSet());
+
+        return contractors;
     }
 
 }

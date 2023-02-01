@@ -119,4 +119,16 @@ public class ContractServiceImpl implements ContractService {
         Iterable<Contract> contractors = contractRepository.findAll();
         return ContractMapper.castIterableToContractDtoSet(contractors);
     }
+
+    @Override
+    public Set<ContractDto> getAllContractsForCompany(Long companyId) {
+        Iterable<Contract> contracts = contractRepository.findByContractorId(companyId);
+        return ContractMapper.castIterableToContractDtoSet(contracts);
+    }
+
+    @Override
+    public Set<ContractDto> getAllContractsForContractor(Long contractorId) {
+        Iterable<Contract> contracts = contractRepository.findByContractorId(contractorId);
+        return ContractMapper.castIterableToContractDtoSet(contracts);
+    }
 }

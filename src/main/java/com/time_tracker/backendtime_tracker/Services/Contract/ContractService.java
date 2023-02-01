@@ -16,4 +16,7 @@ public interface ContractService {
     public Contract getSpecificContract(Long contractorId) throws Exception;
 
     public Set<ContractDto> getAllContracts();
+
+    public Set<ContractDto> getAllContractsForCompany(Long companyId);
+    public Set<ContractDto> getAllContractsForContractor(Long contractorId);
 }
